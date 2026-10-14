@@ -3,10 +3,37 @@
 
 const char CLASS_NAME[] = "Lab1Window";
 
+#define ID_WORK1 1
+#define ID_WORK2 2
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg)
     {
+    case WM_CREATE:
+    {
+        HMENU hMenu = CreateMenu();
+
+        AppendMenuA(hMenu, MF_STRING, ID_WORK1, "Robota1");
+        AppendMenuA(hMenu, MF_STRING, ID_WORK2, "Robota2");
+
+        SetMenu(hwnd, hMenu);
+        return 0;
+    }
+
+    case WM_COMMAND:
+        switch (LOWORD(wParam))
+        {
+        case ID_WORK1:
+            MessageBoxA(hwnd, "Robota1 selected", "Lab1", MB_OK);
+            return 0;
+
+        case ID_WORK2:
+            MessageBoxA(hwnd, "Robota2 selected", "Lab1", MB_OK);
+            return 0;
+        }
+        break;
+
     case WM_DESTROY:
         PostQuitMessage(0);
         return 0;
