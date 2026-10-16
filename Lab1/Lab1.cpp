@@ -1,10 +1,13 @@
-
 #include <windows.h>
+#include <string>
 
 const char CLASS_NAME[] = "Lab1Window";
 
 #define ID_WORK1 1
 #define ID_WORK2 2
+#define ID_RESULT 3
+
+bool ShowTextDialog(HWND owner, std::string& text);
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -18,6 +21,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         AppendMenuA(hMenu, MF_STRING, ID_WORK2, "Robota2");
 
         SetMenu(hwnd, hMenu);
+
+        CreateWindowA(
+            "STATIC", "Result will appear here",
+            WS_CHILD | WS_VISIBLE,
+            20, 30, 500, 30,
+            hwnd, (HMENU)ID_RESULT,
+            GetModuleHandleA(nullptr), nullptr
+        );
+
         return 0;
     }
 
@@ -25,8 +37,19 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         switch (LOWORD(wParam))
         {
         case ID_WORK1:
-            MessageBoxA(hwnd, "Robota1 selected", "Lab1", MB_OK);
+        {
+            std::string text;
+
+            if (ShowTextDialog(hwnd, text))
+            {
+                SetWindowTextA(
+                    GetDlgItem(hwnd, ID_RESULT),
+                    text.c_str()
+                );
+            }
+
             return 0;
+        }
 
         case ID_WORK2:
             MessageBoxA(hwnd, "Robota2 selected", "Lab1", MB_OK);
