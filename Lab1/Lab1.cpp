@@ -8,6 +8,7 @@ const char CLASS_NAME[] = "Lab1Window";
 #define ID_RESULT 3
 
 bool ShowTextDialog(HWND owner, std::string& text);
+bool ShowSliderDialog(HWND owner, int& value);
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -52,8 +53,21 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
 
         case ID_WORK2:
-            MessageBoxA(hwnd, "Robota2 selected", "Lab1", MB_OK);
+        {
+            int value;
+
+            if (ShowSliderDialog(hwnd, value))
+            {
+                std::string result = std::to_string(value);
+
+                SetWindowTextA(
+                    GetDlgItem(hwnd, ID_RESULT),
+                    result.c_str()
+                );
+            }
+
             return 0;
+        }
         }
         break;
 
