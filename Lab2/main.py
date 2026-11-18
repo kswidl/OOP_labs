@@ -1,7 +1,5 @@
-
 import tkinter as tk
 from tkinter import messagebox
-
 
 class GraphicEditor:
     def __init__(self, root):
@@ -72,7 +70,6 @@ class GraphicEditor:
 
     def select_object(self, name):
         pass
-
 
 root = tk.Tk()
 app = GraphicEditor(root)
