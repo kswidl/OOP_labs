@@ -8,8 +8,8 @@ class Point(Shape):
         x1, y1, x2, y2 = self.get_coords()
 
         canvas.create_oval(
-            x1 - 2, y1 - 2,
-            x1 + 2, y1 + 2,
+            x1 - 4, y1 - 4,
+            x1 + 4, y1 + 4,
             fill="black",
             outline="black"
         )
