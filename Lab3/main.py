@@ -190,6 +190,7 @@ class GraphicEditor:
         self.start_x = event.x
         self.start_y = event.y
 
+    
     def preview_drawing(self, event):
         self.canvas.delete("preview")
 
@@ -202,8 +203,8 @@ class GraphicEditor:
             self.canvas.create_oval(
                 x2 - 4, y2 - 4,
                 x2 + 4, y2 + 4,
-                fill="black",
-                outline="black",
+                fill="red",
+                outline="red",
                 tags="preview"
             )
 
