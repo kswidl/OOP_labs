@@ -3,6 +3,10 @@ from tkinter import messagebox
 from functools import partial
 
 from shape_type import ShapeType
+from point import Point
+from line import Line
+from rectangle import Rectangle
+from ellipse import Ellipse
 
 
 class ToolTip:
@@ -49,6 +53,13 @@ class GraphicEditor:
 
         self.current_shape = ShapeType.POINT
         self.shape_var = tk.StringVar(value=self.current_shape.name)
+
+        self.max_shapes = 113
+        self.shapes = [None] * self.max_shapes
+        self.shape_count = 0
+
+        self.start_x = 0
+        self.start_y = 0
 
         self.icons = []
 
@@ -128,13 +139,13 @@ class GraphicEditor:
                     if 5 <= x <= 26 and 7 <= y <= 24:
                         if x in (5, 26) or y in (7, 24):
                             color = "black"
-                        else:
-                            color = "yellow"
 
                 elif shape_type == ShapeType.ELLIPSE:
                     value = ((x - 16) / 12) ** 2 + ((y - 16) / 8) ** 2
                     if 0.85 <= value <= 1.15:
                         color = "black"
+                    elif value < 0.85:
+                        color = "yellow"
 
                 if color:
                     image.put(color, (x, y))
@@ -169,10 +180,105 @@ class GraphicEditor:
             self.root,
             bg="white"
         )
-        self.canvas.pack(
-            fill=tk.BOTH,
-            expand=True
-        )
+        self.canvas.pack(fill=tk.BOTH, expand=True)
+
+        self.canvas.bind("<ButtonPress-1>", self.start_drawing)
+        self.canvas.bind("<B1-Motion>", self.preview_drawing)
+        self.canvas.bind("<ButtonRelease-1>", self.finish_drawing)
+
+    def start_drawing(self, event):
+        self.start_x = event.x
+        self.start_y = event.y
+
+    def preview_drawing(self, event):
+        self.canvas.delete("preview")
+
+        x1 = self.start_x
+        y1 = self.start_y
+        x2 = event.x
+        y2 = event.y
+
+        if self.current_shape == ShapeType.POINT:
+            self.canvas.create_oval(
+                x2 - 4, y2 - 4,
+                x2 + 4, y2 + 4,
+                fill="black",
+                outline="black",
+                tags="preview"
+            )
+
+        elif self.current_shape == ShapeType.LINE:
+            self.canvas.create_line(
+                x1, y1, x2, y2,
+                fill="red",
+                width=2,
+                tags="preview"
+            )
+
+        elif self.current_shape == ShapeType.RECTANGLE:
+            dx = abs(x2 - x1)
+            dy = abs(y2 - y1)
+
+            self.canvas.create_rectangle(
+                x1 - dx, y1 - dy,
+                x1 + dx, y1 + dy,
+                outline="red",
+                width=2,
+                tags="preview"
+            )
+
+        elif self.current_shape == ShapeType.ELLIPSE:
+            self.canvas.create_oval(
+                min(x1, x2),
+                min(y1, y2),
+                max(x1, x2),
+                max(y1, y2),
+                outline="red",
+                fill="yellow",
+                width=2,
+                tags="preview"
+            )
+
+    def finish_drawing(self, event):
+        self.canvas.delete("preview")
+
+        if self.shape_count >= self.max_shapes:
+            messagebox.showwarning(
+                "Увага",
+                "Досягнуто максимальної кількості об'єктів!"
+            )
+            return
+
+        x1 = self.start_x
+        y1 = self.start_y
+        x2 = event.x
+        y2 = event.y
+
+        if self.current_shape == ShapeType.POINT:
+            obj = Point(x2, y2)
+
+        elif self.current_shape == ShapeType.LINE:
+            obj = Line(x1, y1, x2, y2)
+
+        elif self.current_shape == ShapeType.RECTANGLE:
+            obj = Rectangle(x1, y1, x2, y2)
+
+        elif self.current_shape == ShapeType.ELLIPSE:
+            obj = Ellipse(x1, y1, x2, y2)
+
+        else:
+            return
+
+        self.shapes[self.shape_count] = obj
+        self.shape_count += 1
+
+        self.redraw()
+
+    def redraw(self):
+        self.canvas.delete("all")
+
+        for i in range(self.shape_count):
+            self.shapes[i].draw(self.canvas)
 
     def show_about(self):
         messagebox.showinfo(
